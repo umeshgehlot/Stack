@@ -1,0 +1,46 @@
+{
+  "name": "realtime-collaboration-platform",
+  "version": "1.0.0",
+  "description": "Scalable Real-Time Collaboration Platform with microservices architecture",
+  "main": "index.js",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "services/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:services\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:services": "cd services && npm run dev",
+    "build": "npm run build:frontend && npm run build:services",
+    "build:frontend": "cd frontend && npm run build",
+    "build:services": "cd services && npm run build",
+    "start": "concurrently \"npm run start:frontend\" \"npm run start:services\"",
+    "start:frontend": "cd frontend && npm start",
+    "start:services": "cd services && npm start",
+    "test": "npm run test:frontend && npm run test:services",
+    "test:frontend": "cd frontend && npm test",
+    "test:services": "cd services && npm test"
+  },
+  "keywords": [
+    "realtime",
+    "collaboration",
+    "nextjs",
+    "fastify",
+    "webrtc",
+    "redis",
+    "kubernetes",
+    "aws",
+    "microservices"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.3"
+  },
+  "dependencies": {
+    "@tabler/icons-react": "^3.31.0"
+  }
+}

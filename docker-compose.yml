@@ -1,0 +1,228 @@
+version: '3.8'
+
+services:
+  # Frontend service
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - api-gateway
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=development
+      - PORT=8000
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - USER_SERVICE_URL=http://user-service:3002
+      - MEETING_SERVICE_URL=http://meeting-service:3003
+      - TASK_SERVICE_URL=http://task-service:3004
+      - CHAT_SERVICE_URL=http://chat-service:3005
+      - DOCUMENT_SERVICE_URL=http://document-service:3006
+      - BLOG_SERVICE_URL=http://blog-service:3007
+      - CAREERS_SERVICE_URL=http://careers-service:3008
+    depends_on:
+      - auth-service
+      - user-service
+      - meeting-service
+      - task-service
+      - chat-service
+      - document-service
+      - blog-service
+      - careers-service
+
+  # Auth Service
+  auth-service:
+    build:
+      context: ./services/auth-service
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - MONGODB_URI=mongodb://mongodb:27017/stack
+      - REDIS_URI=redis://redis:6379
+      - JWT_SECRET=your-secret-key-change-in-production
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - ./services/auth-service:/app
+      - /app/node_modules
+
+  # User Service
+  user-service:
+    build:
+      context: ./services/user-service
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+      - MONGODB_URI=mongodb://mongodb:27017/stack
+      - REDIS_URI=redis://redis:6379
+      - JWT_SECRET=your-secret-key-change-in-production
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - ./services/user-service:/app
+      - /app/node_modules
+
+  # Meeting Service
+  meeting-service:
+    build:
+      context: ./services/meeting-service
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+      - MONGODB_URI=mongodb://mongodb:27017/stack
+      - REDIS_URI=redis://redis:6379
+      - JWT_SECRET=your-secret-key-change-in-production
+      - MEDIASOUP_LISTEN_IP=0.0.0.0
+      - MEDIASOUP_ANNOUNCED_IP=127.0.0.1
+      - MEDIASOUP_MIN_PORT=10000
+      - MEDIASOUP_MAX_PORT=59999
+      - STORAGE_TYPE=local
+      - STORAGE_LOCAL_PATH=./uploads
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - ./services/meeting-service:/app
+      - /app/node_modules
+      - meeting_uploads:/app/uploads
+    # Required for WebRTC
+    network_mode: "host"
+
+  # Task Service
+  task-service:
+    build:
+      context: ./services/task-service
+    ports:
+      - "3004:3004"
+    environment:
+      - NODE_ENV=development
+      - PORT=3004
+      - MONGODB_URI=mongodb://mongodb:27017/stack
+      - REDIS_URI=redis://redis:6379
+      - JWT_SECRET=your-secret-key-change-in-production
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - ./services/task-service:/app
+      - /app/node_modules
+
+  # Chat Service
+  chat-service:
+    build:
+      context: ./services/chat-service
+    ports:
+      - "3005:3005"
+    environment:
+      - NODE_ENV=development
+      - PORT=3005
+      - MONGODB_URI=mongodb://mongodb:27017/stack
+      - REDIS_URI=redis://redis:6379
+      - JWT_SECRET=your-secret-key-change-in-production
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - ./services/chat-service:/app
+      - /app/node_modules
+
+  # Document Service
+  document-service:
+    build:
+      context: ./services/document-service
+    ports:
+      - "3006:3006"
+    environment:
+      - NODE_ENV=development
+      - PORT=3006
+      - MONGODB_URI=mongodb://mongodb:27017/stack
+      - REDIS_URI=redis://redis:6379
+      - JWT_SECRET=your-secret-key-change-in-production
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - ./services/document-service:/app
+      - /app/node_modules
+
+  # Blog Service
+  blog-service:
+    build:
+      context: ./services/blog-service
+    ports:
+      - "3007:3007"
+    environment:
+      - NODE_ENV=development
+      - PORT=3007
+      - MONGODB_URI=mongodb://mongodb:27017/stack
+      - REDIS_URI=redis://redis:6379
+      - JWT_SECRET=your-secret-key-change-in-production
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - ./services/blog-service:/app
+      - /app/node_modules
+
+  # Careers Service
+  careers-service:
+    build:
+      context: ./services/careers-service
+    ports:
+      - "3008:3008"
+    environment:
+      - NODE_ENV=development
+      - PORT=3008
+      - MONGODB_URI=mongodb://mongodb:27017/stack
+      - REDIS_URI=redis://redis:6379
+      - JWT_SECRET=your-secret-key-change-in-production
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - ./services/careers-service:/app
+      - /app/node_modules
+
+  # MongoDB
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=stack
+
+  # Redis
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mongodb_data:
+  redis_data:
+  meeting_uploads:
